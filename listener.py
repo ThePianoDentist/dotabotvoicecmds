@@ -81,7 +81,8 @@ class MyRecognizeCallback(RecognizeCallback):
         self.parse_hypo(hypothesis)
 
     def on_data(self, data):
-        logger.info("data: {}".format(data))
+        pass
+        #logger.info("data: {}".format(data))
 
     def on_close(self):
         logger.info("Connection closed")
@@ -95,19 +96,18 @@ class MyRecognizeCallback(RecognizeCallback):
             try:
                 mode = self.find_mode(parts[1:])
             except IndexError:
-                logger.warning("Couldnt find mode: {}".format(parts))
-                return
+                if parts[0][:3] == 'run':
+                    mode = "rune"
+                else:
+                    logger.warning("Couldnt find mode: {}".format(parts))
+                    return
             logger.info("\n{} NEW MODE: {}\n\n".format(hero, mode.upper()))
             req = request.Request('http://127.0.0.1:5000/{}/{}'.format(hero, mode), method="POST")
             resp = request.urlopen(req)
             print(resp)
 
     def find_mode(self, parts):
-        return get_close_matches("".join(parts), self.strip_valid_modes())[0]
-
-    @staticmethod
-    def strip_valid_modes():
-        return [vm.replace("_", "").lower() for vm in VALID_MODES]
+        return get_close_matches("".join(parts), VALID_MODES)[0]
 
 # this function will initiate the recognize service and pass in the AudioSource
 def recognize_using_weboscket(*args):

@@ -1,5 +1,3 @@
-import json
-
 from flask import Response
 from flask_api import FlaskAPI, status, exceptions
 from constants import *
